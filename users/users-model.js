@@ -11,7 +11,7 @@ function get() {
     return db('users').select('id', 'username', 'password')
 }
 
-function add(user) {
+async function add(user) {
     const [id] = await db('users').insert(user);
   
     return findById(id);

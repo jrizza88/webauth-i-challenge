@@ -25,8 +25,8 @@ server.post('/api/register', (req, res) => {
     user.password = hash;
 
     Users.add(user)
-        .then(saved => {
-            res.status(201).json(saved)
+        .then(saveUser => {
+            res.status(201).json(saveUser)
         })
         .catch(error => {
             res.send(500).json({error})
