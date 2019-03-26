@@ -34,6 +34,16 @@ server.post('/api/register', (req, res) => {
 
 });
 
+server.get('/api/users', (req, res)=> {
+    Users.get()
+        .then(findUser => {
+            res.status(200).json(findUser);
+        })
+        .catch(error => {
+            res.status(500).json({message: 'Database issue'});
+        })
+});
+
 
 const port = process.env.PORT || 6000;
 server.listen(port, () => console.log(`\n** Running on port ${port} **\n`));
