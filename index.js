@@ -34,13 +34,55 @@ server.post('/api/register', (req, res) => {
 
 });
 
-server.get('/api/users', (req, res)=> {
+server.post('/api/login', (req, res) => {
+    const {username, password} = req.body;
+
+    Users.getBy({username})
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(password, user.password)){
+                res.status(200).json(user)
+            } else {
+                res.status(401).json({message: 'invalid credentials!'})
+            }
+        })
+        .catch(error => {
+            res.send(500).json({error})
+        })
+})
+
+const checkCredentials = (req, res, next) => {
+    const {username, password} = req.headers;
+
+    if (username && password) {
+
+
+    Users.getBy({username})
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(password, user.password)){
+                next();
+            } else {
+                res.status(401).json({message: 'invalid credentials!'})
+            }
+        })
+        .catch(error => {
+            res.send(500).json({error})
+        })
+    } else {
+        res.status(400).json({message: "No credentials provided"})
+    }
+}
+
+server.get('/api/users', checkCredentials, (req, res)=> {
+
+
     Users.get()
         .then(findUser => {
             res.status(200).json(findUser);
         })
         .catch(error => {
-            res.status(500).json({message: 'Database issue'});
+            res.status(500).json(error);
         })
 });
 
