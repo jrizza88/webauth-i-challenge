@@ -4,17 +4,11 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const session = require('session');
+const session = require('express-session');
 const Users = require('./users/users-model');
 // const knexSessionStore = require('connect-session-knex')(session);
 
 const server = express();
-
-server.use(session(sessionOptions)); // creates new session if not already there
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
-
 
 const sessionOptions = {
     name: 'project',
@@ -31,6 +25,29 @@ const sessionOptions = {
         
     // })
 }
+
+
+server.use(session(sessionOptions)); // creates new session if not already there
+server.use(helmet());
+server.use(express.json());
+server.use(cors());
+
+
+// const sessionOptions = {
+//     name: 'project',
+//     secret: 'What is a secret?',
+//     cookie: {
+//         maxAge: 1000 * 60 * 60 * 2,
+//         secure: false
+//     },
+//     httpOnly: true,
+//     resave: false,
+//     saveUninitialized: false,
+
+//     // store: new knexSessionStore({
+        
+//     // })
+// }
 
 server.get('/', (req, res) => {
     res.send('Initial endpoint!')
@@ -61,7 +78,8 @@ server.post('/api/login', (req, res) => {
         .first()
         .then(user => {
             if (user && bcrypt.compareSync(password, user.password)){
-                res.status(200).json(user)
+                req.session.user = user;
+                res.status(200).json({message: `Welcome ${user.username}, have a cookie!`})
             } else {
                 res.status(401).json({message: 'invalid credentials!'})
             }
