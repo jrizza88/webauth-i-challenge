@@ -33,22 +33,6 @@ server.use(express.json());
 server.use(cors());
 
 
-// const sessionOptions = {
-//     name: 'project',
-//     secret: 'What is a secret?',
-//     cookie: {
-//         maxAge: 1000 * 60 * 60 * 2,
-//         secure: false
-//     },
-//     httpOnly: true,
-//     resave: false,
-//     saveUninitialized: false,
-
-//     // store: new knexSessionStore({
-        
-//     // })
-// }
-
 server.get('/', (req, res) => {
     res.send('Initial endpoint!')
 });
@@ -90,25 +74,10 @@ server.post('/api/login', (req, res) => {
 })
 
 const checkCredentials = (req, res, next) => {
-    const {username, password} = req.headers;
-
-    if (username && password) {
-
-
-    Users.getBy({username})
-        .first()
-        .then(user => {
-            if (user && bcrypt.compareSync(password, user.password)){
-                next();
-            } else {
-                res.status(401).json({message: 'invalid credentials!'})
-            }
-        })
-        .catch(error => {
-            res.send(500).json({error})
-        })
+    if (req.session && req.session.user){
+        next()
     } else {
-        res.status(400).json({message: "No credentials provided"})
+        res.status(401).json({message: 'You shall not pass!'})
     }
 }
 
