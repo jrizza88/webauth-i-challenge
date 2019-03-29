@@ -46,6 +46,7 @@ server.post('/api/register', (req, res) => {
 
     Users.add(user)
         .then(saveUser => {
+            req.session.user = user;
             res.status(201).json(saveUser)
         })
         .catch(error => {
@@ -92,6 +93,21 @@ server.get('/api/users', checkCredentials, (req, res)=> {
             res.status(500).json(error);
         })
 });
+
+server.get('/api/logout', (req, res) => {
+    console.log('log out', req.session)
+    if (req.session){
+        req.session.destroy(err => {
+            if (err) {
+                res.send('error logging out');
+            } else {
+                res.send(`Goodbye! `)
+            }
+        })
+    } else {
+        res.end()
+    }
+}); 
 
 
 const port = process.env.PORT || 6000;
