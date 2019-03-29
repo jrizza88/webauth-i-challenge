@@ -4,14 +4,33 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-
+const session = require('session');
 const Users = require('./users/users-model');
+// const knexSessionStore = require('connect-session-knex')(session);
 
 const server = express();
 
+server.use(session(sessionOptions)); // creates new session if not already there
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+
+
+const sessionOptions = {
+    name: 'project',
+    secret: 'What is a secret?',
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 2,
+        secure: false
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+
+    // store: new knexSessionStore({
+        
+    // })
+}
 
 server.get('/', (req, res) => {
     res.send('Initial endpoint!')
@@ -35,6 +54,7 @@ server.post('/api/register', (req, res) => {
 });
 
 server.post('/api/login', (req, res) => {
+    console.log(req.session)
     const {username, password} = req.body;
 
     Users.getBy({username})
