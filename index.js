@@ -6,7 +6,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const Users = require('./users/users-model');
-// const knexSessionStore = require('connect-session-knex')(session);
+const knexSessionStore = require('connect-session-knex')(session);
 
 const server = express();
 
@@ -21,9 +21,15 @@ const sessionOptions = {
     resave: false,
     saveUninitialized: false,
 
-    // store: new knexSessionStore({
-        
-    // })
+    // stored via ram/memory
+    // store is a class, reason why new is used
+    store: new knexSessionStore({
+        knex: require('./database/dbConfig'),
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        createtable: true,
+        clearInterval: 1000 * 60 * 60
+    })
 }
 
 
