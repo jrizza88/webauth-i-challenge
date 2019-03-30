@@ -72,7 +72,7 @@ server.post('/api/login', (req, res) => {
                 req.session.user = user;
                 res.status(200).json({message: `Welcome ${user.username}, have a cookie!`})
             } else {
-                res.status(401).json({message: 'invalid credentials!'})
+                res.status(401).json({message: 'You shall not pass!'})
             }
         })
         .catch(error => {
