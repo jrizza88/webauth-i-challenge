@@ -80,7 +80,7 @@ server.post('/api/login', (req, res) => {
         })
 })
 
-const checkCredentials = (req, res, next) => {
+const restricted = (req, res, next) => {
     if (req.session && req.session.user){
         next()
     } else {
@@ -88,7 +88,7 @@ const checkCredentials = (req, res, next) => {
     }
 }
 
-server.get('/api/users', checkCredentials, (req, res)=> {
+server.get('/api/users', restricted, (req, res)=> {
 
 
     Users.get()
@@ -114,6 +114,7 @@ server.get('/api/logout', (req, res) => {
         res.end()
     }
 }); 
+
 
 
 const port = process.env.PORT || 6000;
